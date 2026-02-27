@@ -1288,7 +1288,7 @@ document.querySelectorAll('.fc').forEach(card => {
 
 /* ─────────── PROJECT RENDERING ─────────── */
 const DEFAULT_PROJECTS = [
-  {id:'d1',name:'TEST',desc:'AI-powered SaaS analytics platform with real-time ML insights, predictive visualization, and multi-tenant arch.',tags:['React','AI/ML','D3.js','AWS'],emoji:'🖥️',bg:'linear-gradient(135deg,#060a18,#1a1060)',size:'pc-lg',badge:'FEATURED',url:''}
+  {id:'d1',name:'TEST',desc:'AI-powered SaaS analytics platform with real-time ML insights, predictive visualization, and multi-tenant arch.',tags:['React','AI/ML','D3.js','AWS'],emoji:'🖥️',bg:'linear-gradient(135deg,#060a18,#1a1060)',size:'pc-lg',badge:'FEATURED',url:'',imageUrl:'https://i.ibb.co/SDttjbCx/face.png'}
   
 ];
 const allProjects = () => [...DEFAULT_PROJECTS, ...projects];
@@ -1301,9 +1301,14 @@ function renderProjects() {
     card.className = `proj-card ${p.size} reveal rev-up`;
     card.dataset.id = p.id;
     const isDeletable = !p.id.startsWith('d');
+
+    // ✅ UPDATED IMAGE SUPPORT (imageData OR imageUrl)
     const thumbContent = p.imageData
       ? `<img src="${p.imageData}" alt="${p.name}">`
-      : `<div class="pc-emoji">${p.emoji||'🚀'}</div>`;
+      : p.imageUrl
+        ? `<img src="${p.imageUrl}" alt="${p.name}">`
+        : `<div class="pc-emoji">${p.emoji||'🚀'}</div>`;
+
     card.innerHTML = `
       <div class="pc-thumb" style="background:${p.bg||'linear-gradient(135deg,#060a18,#1a0a30)'}">
         ${thumbContent}
@@ -1328,11 +1333,11 @@ function renderProjects() {
     }
     grid.appendChild(card);
   });
-  // re-observe new cards (safe: revObs may not exist yet on first load)
   if (typeof revObs !== 'undefined') {
     document.querySelectorAll('.proj-card.reveal:not(.vis)').forEach(el => revObs.observe(el));
   }
 }
+
 function deleteProject(id) {
   projects = projects.filter(p => p.id !== id);
   localStorage.setItem('thenux_projects', JSON.stringify(projects));
