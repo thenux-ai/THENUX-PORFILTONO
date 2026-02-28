@@ -555,7 +555,7 @@ function hackConsole(){
       if(tx===''){const br=document.createElement('div');br.innerHTML='&nbsp;';body.appendChild(br);body.scrollTop=body.scrollHeight;return;}
       const ln=document.createElement('div');ln.className=c;body.appendChild(ln);body.scrollTop=body.scrollHeight;
       // Typing speed varies by line type
-      const spd=tx.startsWith('[OK]')?11:tx.startsWith('[>>]')?16:tx.startsWith('[!!'))?7:tx.includes('██')?3:13;
+      const spd=tx.startsWith('[OK]')?11:tx.startsWith('[>>]')?16:tx.startsWith('[!!')?7:tx.includes('██')?3:13;
       let ci=0;
       const iv=setInterval(()=>{
         ci++;ln.textContent=tx.slice(0,ci);body.scrollTop=body.scrollHeight;
