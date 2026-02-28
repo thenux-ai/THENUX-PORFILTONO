@@ -687,9 +687,21 @@ footer{
 @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
 
 /* MOBILE */
-@media(max-width:900px){
+/* ── TABLET (≤1024px) ── */
+@media(max-width:1024px){
+  .about-grid{gap:4rem}
+  .contact-grid{gap:4rem}
+  #projectsGrid{grid-template-columns:repeat(12,1fr)}
+  .proj-card.pc-lg{grid-column:span 7}
+  .proj-card.pc-sm{grid-column:span 5}
+  .proj-card.pc-md{grid-column:span 6}
+  .proj-card.pc-full{grid-column:span 12}
+}
+/* ── SMALL TABLET / LARGE PHONE (≤768px) ── */
+@media(max-width:768px){
   .nav-links{display:none}
   .hamburger{display:flex}
+  nav{padding:1rem 1.5rem}
   .sec-wrap{padding:0 1.4rem}
   .about-grid,.contact-grid{grid-template-columns:1fr;gap:3rem}
   .float-scene{height:340px}
@@ -701,20 +713,21 @@ footer{
   .stat-item{border-right:none;border-bottom:1px solid var(--border)}
   .stat-item:nth-child(odd){border-right:1px solid var(--border)}
   .stat-item:nth-child(3),.stat-item:nth-child(4){border-bottom:none}
-  .proj-card.pc-lg,.proj-card.pc-sm,.proj-card.pc-md{grid-column:span 12}
+  .proj-card.pc-lg,.proj-card.pc-sm,.proj-card.pc-md,.proj-card.pc-full{grid-column:span 12}
   footer{flex-direction:column;text-align:center;padding:2rem 1.5rem}
   .footer-links{justify-content:center}
   #secHud{display:none}
   .hire-cta-group{flex-direction:column;align-items:center}
-  .hire-cards{grid-template-columns:1fr}
-  nav{padding:1rem 1.5rem}
+  .hire-cards{grid-template-columns:1fr 1fr}
   #about,#skills,#projects,#hire,#contact{padding:6rem 0}
   .fg-row{grid-template-columns:1fr}
 }
+/* ── MOBILE (≤480px) ── */
 @media(max-width:480px){
   .hero-cta{flex-direction:column;align-items:center}
   .hero-cta .btn-primary,.hero-cta .btn-outline,.hero-cta .btn-hire{width:100%;text-align:center}
   .sec-actions{flex-direction:column;align-items:center}
+  .hire-cards{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -1724,7 +1737,7 @@ const revObs = new IntersectionObserver(entries => {
       setTimeout(() => { b.style.width = b.dataset.pct+'%'; }, 300);
     });
   });
-}, {threshold: .14});
+}, {threshold: 0, rootMargin: '0px 0px -60px 0px'});
 document.querySelectorAll('.reveal, .stat-item').forEach(el => revObs.observe(el));
 
 // ── INIT PROJECTS (must run AFTER revObs is defined) ──
