@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THENUX — Tools & AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden;min-height:100vh}
+:root{
+  --bg:#020406;--bg2:#030810;--card:rgba(4,14,10,.9);
+  --border:rgba(0,255,180,.1);--border2:rgba(0,200,255,.1);
+  --acc:#00ffb4;--acc2:#00c8ff;--acc3:#ff2d78;--acc4:#ffe600;--acc5:#b44fff;
+  --text:#ccffe8;--muted:rgba(180,255,220,.38);
+  --glow:rgba(0,255,180,.45);
+  --fh:'Orbitron',sans-serif;--fm:'Share Tech Mono',monospace;--fb:'Rajdhani',sans-serif;
+}
+[data-theme="light"]{--bg:#edfff8;--bg2:#dafff0;--card:rgba(255,255,255,.95);--border:rgba(0,130,90,.15);--text:#001a0e;--muted:rgba(0,70,40,.5);--glow:rgba(0,180,120,.3)}
+::selection{background:var(--acc);color:#000}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--acc);border-radius:2px}
+#scan{position:fixed;inset:0;pointer-events:none;z-index:9000;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,180,.01) 2px,rgba(0,255,180,.01) 4px)}
+#cur{position:fixed;width:10px;height:10px;border-radius:50%;background:var(--acc);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);box-shadow:0 0 12px var(--acc);mix-blend-mode:screen;transition:transform .12s}
+#curR{position:fixed;width:38px;height:38px;border:1.5px solid var(--acc);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);opacity:.5;transition:all .25s cubic-bezier(.23,1,.32,1)}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:800;padding:.9rem 2.5rem;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(22px);border-bottom:1px solid var(--border);background:rgba(2,4,6,.7);transition:background .4s}
+[data-theme="light"] nav{background:rgba(237,255,248,.8)}
+.nl{font-family:var(--fh);font-weight:900;font-size:1.3rem;letter-spacing:.18em;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+.nr{display:flex;gap:.6rem;align-items:center}
+.nb{width:36px;height:36px;border:1px solid var(--border);border-radius:8px;color:var(--text);display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .25s;background:transparent;cursor:pointer;text-decoration:none}
+.nb:hover{background:var(--acc);color:#000;border-color:var(--acc);box-shadow:0 0 18px var(--glow)}
+.nb-home{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#000;padding:.5rem 1.2rem;border-radius:4px;font-family:var(--fm);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border:none;cursor:pointer;white-space:nowrap;transition:transform .2s,box-shadow .2s;text-decoration:none}
+.nb-home:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--glow)}
+
+/* HERO */
+.t-hero{padding:8rem 2rem 5rem;text-align:center;position:relative;overflow:hidden}
+.t-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% -5%,rgba(0,255,180,.15) 0%,transparent 65%);pointer-events:none}
+.t-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,180,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,180,.03) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 100% 70% at 50% 50%,black 20%,transparent 80%)}
+.t-tag{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--fm);font-size:.65rem;letter-spacing:.18em;color:var(--acc);background:rgba(0,255,180,.08);border:1px solid rgba(0,255,180,.25);border-radius:100px;padding:.3rem 1rem;margin-bottom:1.5rem;position:relative;z-index:1}
+.t-tagd{width:6px;height:6px;background:var(--acc);border-radius:50%;animation:tp 1.5s ease-in-out infinite}
+@keyframes tp{0%,100%{box-shadow:0 0 0 0 var(--glow)}70%{box-shadow:0 0 0 8px transparent}}
+.t-title{font-family:var(--fh);font-weight:900;font-size:clamp(2.5rem,7vw,5.5rem);letter-spacing:-.02em;line-height:.95;margin-bottom:1.2rem;position:relative;z-index:1}
+.t-t1{display:block;background:linear-gradient(180deg,#fff 0%,var(--acc) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.t-t2{display:block;font-size:.3em;letter-spacing:.4em;text-indent:.4em;color:rgba(0,255,180,.4);font-weight:400;font-family:var(--fm);margin-top:.5rem}
+.t-sub{font-size:1rem;font-weight:300;color:var(--muted);max-width:550px;margin:0 auto 2.5rem;line-height:1.8;position:relative;z-index:1}
+
+/* TOOL SEARCH */
+.t-search-wrap{position:relative;z-index:1;max-width:500px;margin:0 auto 4rem}
+.t-search{width:100%;background:rgba(0,255,180,.04);border:1px solid var(--border);border-radius:50px;padding:.85rem 1.5rem .85rem 3rem;color:var(--text);font-family:var(--fm);font-size:.78rem;outline:none;transition:border-color .25s,box-shadow .25s}
+.t-search:focus{border-color:var(--acc);box-shadow:0 0 20px rgba(0,255,180,.12)}
+.t-search-ico{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+
+/* WRAP */
+.wrap{max-width:1280px;margin:0 auto;padding:0 2.5rem}
+
+/* TOOL CATEGORY TABS */
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.tab{font-family:var(--fm);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;padding:.45rem 1.1rem;border-radius:100px;border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .22s;background:transparent}
+.tab.on{background:rgba(0,255,180,.1);border-color:var(--acc);color:var(--acc)}
+.tab:hover{border-color:var(--acc);color:var(--acc)}
+
+/* TOOLS GRID */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem;margin-bottom:6rem}
+
+/* TOOL CARD */
+.tc{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform .35s cubic-bezier(.23,1,.32,1),box-shadow .35s,border-color .3s}
+.tc:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.45),0 0 25px rgba(0,255,180,.08);border-color:rgba(0,255,180,.3)}
+.tc-head{padding:1.4rem 1.5rem 1rem;display:flex;align-items:center;gap:1rem;border-bottom:1px solid var(--border)}
+.tc-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.tc-info .tc-name{font-family:var(--fh);font-size:.88rem;letter-spacing:.06em;color:var(--text)}
+.tc-info .tc-cat{font-family:var(--fm);font-size:.58rem;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-top:.2rem}
+.tc-badge{margin-left:auto;font-family:var(--fm);font-size:.52rem;letter-spacing:.1em;padding:.2rem .55rem;border-radius:100px;text-transform:uppercase}
+.badge-live{background:rgba(0,255,180,.1);border:1px solid rgba(0,255,180,.25);color:var(--acc)}
+.badge-ai{background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.25);color:var(--acc2)}
+.badge-util{background:rgba(255,230,0,.08);border:1px solid rgba(255,230,0,.2);color:var(--acc4)}
+.badge-fun{background:rgba(180,79,255,.1);border:1px solid rgba(180,79,255,.25);color:var(--acc5)}
+.tc-body{padding:1.2rem 1.5rem}
+
+/* ── AI CHAT TOOL ── */
+.ai-chat-wrap{display:flex;flex-direction:column;gap:.6rem}
+.ai-model-row{display:flex;gap:.4rem}
+.am-btn{flex:1;background:transparent;border:1px solid var(--border);border-radius:6px;padding:.35rem;font-family:var(--fm);font-size:.6rem;letter-spacing:.08em;color:var(--muted);cursor:pointer;transition:all .2s;text-transform:uppercase}
+.am-btn.on{background:rgba(0,255,180,.1);border-color:var(--acc);color:var(--acc)}
+.am-btn:hover{border-color:var(--acc);color:var(--acc)}
+.ai-msgs{height:200px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;padding:.7rem;display:flex;flex-direction:column;gap:.5rem;background:rgba(0,0,0,.2);scrollbar-width:thin;scrollbar-color:var(--acc) transparent}
+.ai-msgs::-webkit-scrollbar{width:2px}.ai-msgs::-webkit-scrollbar-thumb{background:var(--acc)}
+.am{max-width:88%;border-radius:9px;padding:.5rem .75rem;font-family:var(--fm);font-size:.66rem;line-height:1.65;word-break:break-word}
+.am-b{background:rgba(0,255,180,.06);border:1px solid rgba(0,255,180,.1);color:var(--text);align-self:flex-start;border-bottom-left-radius:2px}
+.am-u{background:rgba(0,200,255,.12);border:1px solid rgba(0,200,255,.18);color:#fff;align-self:flex-end;border-bottom-right-radius:2px}
+.am-ty{display:flex;gap:3px;padding:.5rem .75rem;background:rgba(0,255,180,.04);border:1px solid rgba(0,255,180,.1);border-radius:9px;align-self:flex-start;border-bottom-left-radius:2px}
+.am-ty span{width:5px;height:5px;background:var(--acc);border-radius:50%;animation:aty .8s ease-in-out infinite}
+.am-ty span:nth-child(2){animation-delay:.15s}.am-ty span:nth-child(3){animation-delay:.3s}
+@keyframes aty{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+.ai-inp-row{display:flex;gap:.5rem}
+.ai-inp{flex:1;background:rgba(0,255,180,.04);border:1px solid var(--border);border-radius:8px;padding:.6rem .9rem;color:var(--text);font-family:var(--fm);font-size:.68rem;outline:none;transition:border-color .2s}
+.ai-inp:focus{border-color:var(--acc)}
+.ai-send{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#000;border:none;border-radius:8px;padding:.6rem 1rem;font-family:var(--fm);font-size:.68rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;white-space:nowrap}
+.ai-send:hover{transform:scale(1.05);box-shadow:0 4px 16px var(--glow)}
+.ai-send:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* ── COLOR PICKER TOOL ── */
+.color-tool{}
+.ct-preview{width:100%;height:70px;border-radius:10px;border:1px solid var(--border);margin-bottom:.8rem;transition:background .2s;display:flex;align-items:center;justify-content:center;font-family:var(--fm);font-size:.7rem;font-weight:700}
+.ct-row{display:flex;gap:.6rem;margin-bottom:.6rem;align-items:center}
+.ct-label{font-family:var(--fm);font-size:.62rem;letter-spacing:.1em;color:var(--muted);width:50px;text-transform:uppercase}
+.ct-inp{flex:1;background:rgba(0,255,180,.04);border:1px solid var(--border);border-radius:6px;padding:.45rem .7rem;color:var(--text);font-family:var(--fm);font-size:.7rem;outline:none;transition:border-color .2s}
+.ct-inp:focus{border-color:var(--acc)}
+input[type=color]{-webkit-appearance:none;width:36px;height:36px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:transparent;padding:1px}
+input[type=color]::-webkit-color-swatch-wrapper{padding:2px}
+input[type=color]::-webkit-color-swatch{border-radius:4px;border:none}
+.ct-palettes{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem}
+.ct-pal{width:28px;height:28px;border-radius:6px;cursor:pointer;transition:transform .2s,box-shadow .2s;border:2px solid transparent}
+.ct-pal:hover{transform:scale(1.2);box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.ct-copy{width:100%;background:rgba(0,255,180,.08);border:1px solid var(--border);border-radius:8px;padding:.5rem;font-family:var(--fm);font-size:.65rem;color:var(--acc);cursor:pointer;transition:background .2s;letter-spacing:.08em;margin-top:.5rem}
+.ct-copy:hover{background:rgba(0,255,180,.18)}
+
+/* ── TEXT TOOLS ── */
+.text-tool{}
+.tt-ta{width:100%;background:rgba(0,255,180,.03);border:1px solid var(--border);border-radius:8px;padding:.7rem;color:var(--text);font-family:var(--fm);font-size:.68rem;outline:none;resize:none;min-height:90px;line-height:1.6;transition:border-color .2s}
+.tt-ta:focus{border-color:var(--acc)}
+.tt-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin-top:.6rem}
+.tt-btn{background:rgba(0,255,180,.06);border:1px solid var(--border);border-radius:6px;padding:.45rem .5rem;font-family:var(--fm);font-size:.6rem;letter-spacing:.06em;color:var(--muted);cursor:pointer;transition:all .2s;text-transform:uppercase}
+.tt-btn:hover{background:rgba(0,255,180,.15);border-color:var(--acc);color:var(--acc)}
+.tt-stats{display:flex;gap:1rem;margin-top:.6rem;font-family:var(--fm);font-size:.62rem;color:var(--muted)}
+.tt-stat span{color:var(--acc)}
+
+/* ── PASSWORD GEN ── */
+.pg-out{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;font-family:var(--fm);font-size:.85rem;letter-spacing:.12em;color:var(--acc);margin-bottom:.7rem;min-height:2.5rem;word-break:break-all}
+.pg-opts{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:.7rem}
+.pg-opt{display:flex;align-items:center;gap:.4rem;font-family:var(--fm);font-size:.62rem;color:var(--muted);cursor:pointer}
+.pg-opt input[type=checkbox]{accent-color:var(--acc);cursor:pointer}
+.pg-len{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem}
+.pg-slider{flex:1;accent-color:var(--acc)}
+.pg-len-val{font-family:var(--fm);font-size:.75rem;color:var(--acc);min-width:2rem;text-align:right}
+.pg-row{display:flex;gap:.5rem}
+.pg-btn{flex:1;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#000;border:none;border-radius:8px;padding:.65rem;font-family:var(--fm);font-size:.68rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.pg-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px var(--glow)}
+.pg-copy{flex:1;background:transparent;border:1px solid var(--border);border-radius:8px;padding:.65rem;font-family:var(--fm);font-size:.68rem;color:var(--muted);cursor:pointer;transition:border-color .2s,color .2s}
+.pg-copy:hover{border-color:var(--acc);color:var(--acc)}
+.pg-str{display:flex;gap:3px;margin-top:.6rem}
+.pg-s{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.06)}
+
+/* ── HASH TOOL ── */
+.ht-inp{width:100%;background:rgba(0,255,180,.03);border:1px solid var(--border);border-radius:8px;padding:.65rem .9rem;color:var(--text);font-family:var(--fm);font-size:.72rem;outline:none;margin-bottom:.6rem;transition:border-color .2s}
+.ht-inp:focus{border-color:var(--acc)}
+.ht-res{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:8px;padding:.65rem .9rem;font-family:var(--fm);font-size:.65rem;color:var(--acc);word-break:break-all;margin-bottom:.5rem;min-height:2.2rem;line-height:1.5}
+.ht-row{display:flex;gap:.4rem;margin-bottom:.5rem}
+.ht-sel{flex:1;background:rgba(0,255,180,.04);border:1px solid var(--border);border-radius:6px;padding:.45rem .7rem;color:var(--text);font-family:var(--fm);font-size:.65rem;outline:none;cursor:pointer}
+.ht-btn{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#000;border:none;border-radius:6px;padding:.45rem 1rem;font-family:var(--fm);font-size:.65rem;font-weight:700;cursor:pointer;transition:transform .2s}
+.ht-btn:hover{transform:scale(1.04)}
+
+/* ── BASE64 TOOL ── */
+.b64-ta{width:100%;background:rgba(0,255,180,.03);border:1px solid var(--border);border-radius:8px;padding:.65rem;color:var(--text);font-family:var(--fm);font-size:.65rem;resize:none;min-height:72px;outline:none;margin-bottom:.5rem;line-height:1.6;transition:border-color .2s}
+.b64-ta:focus{border-color:var(--acc)}
+.b64-row{display:flex;gap:.5rem;margin-bottom:.5rem}
+.b64-btn{flex:1;padding:.5rem;border:1px solid var(--border);border-radius:6px;font-family:var(--fm);font-size:.62rem;cursor:pointer;transition:all .2s;text-transform:uppercase;letter-spacing:.08em}
+.b64-enc{background:rgba(0,255,180,.08);color:var(--acc)}.b64-enc:hover{background:rgba(0,255,180,.2)}
+.b64-dec{background:rgba(0,200,255,.08);color:var(--acc2)}.b64-dec:hover{background:rgba(0,200,255,.2)}
+
+/* ── JSON FORMATTER ── */
+.jf-ta{width:100%;background:rgba(0,255,180,.03);border:1px solid var(--border);border-radius:8px;padding:.65rem;color:var(--text);font-family:var(--fm);font-size:.65rem;resize:none;min-height:90px;outline:none;margin-bottom:.5rem;line-height:1.6;transition:border-color .2s}
+.jf-ta:focus{border-color:var(--acc)}
+.jf-btns{display:flex;gap:.4rem;margin-bottom:.5rem}
+.jf-btn{flex:1;padding:.5rem;border:1px solid var(--border);border-radius:6px;font-family:var(--fm);font-size:.62rem;cursor:pointer;transition:all .2s;background:rgba(0,255,180,.06);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.jf-btn:hover{background:rgba(0,255,180,.16);color:var(--acc);border-color:var(--acc)}
+
+/* ── QR TOOL ── */
+.qr-inp{width:100%;background:rgba(0,255,180,.03);border:1px solid var(--border);border-radius:8px;padding:.65rem .9rem;color:var(--text);font-family:var(--fm);font-size:.72rem;outline:none;margin-bottom:.6rem;transition:border-color .2s}
+.qr-inp:focus{border-color:var(--acc)}
+.qr-preview{width:160px;height:160px;background:white;border-radius:10px;margin:0 auto .6rem;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.qr-btn{width:100%;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#000;border:none;border-radius:8px;padding:.65rem;font-family:var(--fm);font-size:.68rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-bottom:.4rem}
+.qr-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px var(--glow)}
+.qr-note{font-family:var(--fm);font-size:.58rem;color:var(--muted);text-align:center;letter-spacing:.06em}
+
+/* ── UNIT CONVERTER ── */
+.uc-row{display:flex;gap:.5rem;margin-bottom:.5rem;align-items:center}
+.uc-inp{flex:1;background:rgba(0,255,180,.03);border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;color:var(--text);font-family:var(--fm);font-size:.75rem;outline:none;transition:border-color .2s}
+.uc-inp:focus{border-color:var(--acc)}
+.uc-sel{background:rgba(0,255,180,.04);border:1px solid var(--border);border-radius:8px;padding:.6rem .7rem;color:var(--text);font-family:var(--fm);font-size:.68rem;outline:none;cursor:pointer;max-width:110px}
+.uc-eq{font-family:var(--fm);font-size:.7rem;color:var(--muted);text-align:center;padding:.3rem 0}
+.uc-res{background:rgba(0,255,180,.06);border:1px solid rgba(0,255,180,.15);border-radius:8px;padding:.65rem .9rem;font-family:var(--fm);font-size:.82rem;color:var(--acc);letter-spacing:.05em}
+.uc-cats{display:flex;gap:.4rem;margin-bottom:.8rem;flex-wrap:wrap}
+.uc-cat{padding:.28rem .7rem;border-radius:100px;border:1px solid var(--border);font-family:var(--fm);font-size:.58rem;color:var(--muted);cursor:pointer;transition:all .2s;letter-spacing:.08em;text-transform:uppercase}
+.uc-cat.on{background:rgba(0,255,180,.1);border-color:var(--acc);color:var(--acc)}
+
+/* ── TIMER ── */
+.tmr-disp{font-family:var(--fh);font-size:clamp(2rem,6vw,3.2rem);font-weight:900;letter-spacing:.05em;color:var(--acc);text-align:center;padding:1rem 0;text-shadow:0 0 30px rgba(0,255,180,.4)}
+.tmr-btns{display:flex;gap:.5rem;justify-content:center;margin-bottom:.8rem}
+.tmr-btn{padding:.6rem 1.4rem;border-radius:8px;font-family:var(--fm);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;cursor:pointer;transition:all .2s;border:none}
+.tmr-start{background:var(--acc);color:#000}.tmr-start:hover{box-shadow:0 4px 18px var(--glow)}
+.tmr-stop{background:rgba(255,45,120,.15);color:var(--acc3);border:1px solid rgba(255,45,120,.3)}.tmr-stop:hover{background:rgba(255,45,120,.3)}
+.tmr-reset{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)}.tmr-reset:hover{border-color:var(--acc);color:var(--acc)}
+.tmr-laps{max-height:100px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--acc) transparent}
+.tmr-lap{display:flex;justify-content:space-between;font-family:var(--fm);font-size:.62rem;color:var(--muted);padding:.25rem 0;border-bottom:1px solid var(--border)}
+.tmr-lap:last-child{border-bottom:none}
+.tmr-lap span{color:var(--acc)}
+
+/* ── IP TOOL ── */
+.ip-box{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:1rem;font-family:var(--fm);font-size:.68rem;display:flex;flex-direction:column;gap:.5rem}
+.ip-row{display:flex;justify-content:space-between;align-items:center}
+.ip-lbl{color:var(--muted);letter-spacing:.1em;font-size:.6rem;text-transform:uppercase}
+.ip-val{color:var(--acc);font-size:.82rem}
+.ip-copy{background:transparent;border:1px solid var(--border);border-radius:5px;padding:.2rem .55rem;font-family:var(--fm);font-size:.55rem;color:var(--muted);cursor:pointer;transition:all .2s}
+.ip-copy:hover{border-color:var(--acc);color:var(--acc)}
+.ip-refresh{width:100%;background:rgba(0,255,180,.07);border:1px solid var(--border);border-radius:8px;padding:.55rem;font-family:var(--fm);font-size:.65rem;color:var(--acc);cursor:pointer;transition:background .2s;margin-top:.4rem;letter-spacing:.08em}
+.ip-refresh:hover{background:rgba(0,255,180,.18)}
+
+/* ── LOREM IPSUM ── */
+.li-row{display:flex;gap:.5rem;align-items:center;margin-bottom:.6rem}
+.li-label{font-family:var(--fm);font-size:.62rem;color:var(--muted);white-space:nowrap}
+.li-num{width:60px;background:rgba(0,255,180,.04);border:1px solid var(--border);border-radius:6px;padding:.45rem .6rem;color:var(--text);font-family:var(--fm);font-size:.72rem;outline:none;text-align:center;transition:border-color .2s}
+.li-num:focus{border-color:var(--acc)}
+.li-sel{flex:1;background:rgba(0,255,180,.04);border:1px solid var(--border);border-radius:6px;padding:.45rem .6rem;color:var(--text);font-family:var(--fm);font-size:.65rem;outline:none;cursor:pointer}
+.li-out{background:rgba(0,0,0,.25);border:1px solid var(--border);border-radius:8px;padding:.7rem;font-family:var(--fb);font-size:.82rem;color:var(--muted);line-height:1.7;min-height:80px;margin-bottom:.5rem;max-height:120px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--acc) transparent}
+.li-btn{width:100%;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#000;border:none;border-radius:8px;padding:.65rem;font-family:var(--fm);font-size:.68rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.li-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px var(--glow)}
+
+/* FOOTER */
+footer{padding:2.5rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;background:rgba(0,0,0,.3)}
+.fl{font-family:var(--fh);font-weight:900;font-size:1.1rem;letter-spacing:.18em;background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.flinks{display:flex;gap:1.5rem;flex-wrap:wrap}
+.flinks a{font-family:var(--fm);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--acc)}
+.fcopy{font-family:var(--fm);font-size:.58rem;color:var(--muted)}
+
+@media(max-width:768px){
+  nav{padding:.9rem 1.2rem}
+  .wrap{padding:0 1.2rem}
+  .tools-grid{grid-template-columns:1fr}
+  .t-search-wrap{padding:0 1.2rem}
+  footer{flex-direction:column;text-align:center}
+  .flinks{justify-content:center}
+}
+@media(min-width:1400px){
+  .wrap{padding:0 4rem}
+  .tools-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+<div id="scan"></div>
+<div id="cur"></div>
+<div id="curR"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="home.html" class="nl">THENUX</a>
+  <div class="nr">
+    <a href="home.html" class="nb" title="Portfolio">🏠</a>
+    <a href="https://github.com/thenux-ai/" target="_blank" class="nb" title="GitHub">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+    </a>
+    <button class="nb" id="themeBtn" onclick="toggleTheme()" title="Theme">🌙</button>
+    <a href="home.html" class="nb-home">← Portfolio</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="t-hero">
+  <div class="t-grid"></div>
+  <div class="t-tag"><span class="t-tagd"></span>THENUX TOOLS & AI SUITE</div>
+  <h1 class="t-title">
+    <span class="t-t1">TOOLS & AI</span>
+    <span class="t-t2">DEVELOPER UTILITY SUITE</span>
+  </h1>
+  <p class="t-sub">AI-powered assistant, developer utilities, and creative tools — all in one place. Built by THENUX, for everyone.</p>
+  <div class="t-search-wrap">
+    <span class="t-search-ico">🔍</span>
+    <input class="t-search" id="toolSearch" placeholder="Search tools..." oninput="filterTools(this.value)">
+  </div>
+</section>
+
+<!-- TOOLS -->
+<div class="wrap">
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" onclick="filterCat('all',this)">All Tools</button>
+    <button class="tab" onclick="filterCat('ai',this)">🤖 AI</button>
+    <button class="tab" onclick="filterCat('text',this)">📝 Text</button>
+    <button class="tab" onclick="filterCat('security',this)">🔐 Security</button>
+    <button class="tab" onclick="filterCat('convert',this)">🔄 Convert</button>
+    <button class="tab" onclick="filterCat('utility',this)">⚡ Utility</button>
+  </div>
+
+  <div class="tools-grid" id="toolsGrid">
+
+    <!-- 1. AI CHAT GPT-4 -->
+    <div class="tc" data-cat="ai" data-name="thenux ai assistant gpt chat">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(0,255,180,.15),rgba(0,200,255,.1))">🤖</div>
+        <div class="tc-info"><div class="tc-name">THENUX AI Chat</div><div class="tc-cat">AI Assistant</div></div>
+        <div class="tc-badge badge-ai">GPT-4</div>
+      </div>
+      <div class="tc-body">
+        <div class="ai-chat-wrap">
+          <div class="ai-model-row">
+            <button class="am-btn on" data-m="gpt4" onclick="setM('gpt4',this)">GPT-4</button>
+            <button class="am-btn" data-m="gpt3" onclick="setM('gpt3',this)">GPT-3</button>
+          </div>
+          <div class="ai-msgs" id="aiMsgsMain"></div>
+          <div class="ai-inp-row">
+            <input class="ai-inp" id="aiInpMain" placeholder="Ask anything..." autocomplete="off" onkeydown="if(event.key==='Enter')sendMain()">
+            <button class="ai-send" id="aiSendMain" onclick="sendMain()">↑ Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. COLOR PICKER & PALETTE -->
+    <div class="tc" data-cat="utility" data-name="color picker palette hex rgb">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(255,45,120,.15),rgba(255,150,0,.1))">🎨</div>
+        <div class="tc-info"><div class="tc-name">Color Explorer</div><div class="tc-cat">Utility</div></div>
+        <div class="tc-badge badge-util">Free</div>
+      </div>
+      <div class="tc-body color-tool">
+        <div class="ct-preview" id="ctPrev" style="background:#00ffb4;color:#000">#00FFB4</div>
+        <div class="ct-row">
+          <span class="ct-label">HEX</span>
+          <input type="color" id="ctColor" value="#00ffb4" oninput="updateColor(this.value)">
+          <input class="ct-inp" id="ctHex" value="#00ffb4" oninput="updateColorFromHex(this.value)" style="flex:1">
+        </div>
+        <div class="ct-row"><span class="ct-label">RGB</span><input class="ct-inp" id="ctRgb" value="0, 255, 180" readonly style="color:var(--muted)"></div>
+        <div class="ct-row"><span class="ct-label">HSL</span><input class="ct-inp" id="ctHsl" value="163°, 100%, 50%" readonly style="color:var(--muted)"></div>
+        <div class="ct-palettes" id="ctPals"></div>
+        <button class="ct-copy" onclick="copyColor()">📋 Copy HEX</button>
+      </div>
+    </div>
+
+    <!-- 3. TEXT TOOLS -->
+    <div class="tc" data-cat="text" data-name="text word count uppercase lowercase case transform">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(255,230,0,.12),rgba(0,255,180,.08))">📝</div>
+        <div class="tc-info"><div class="tc-name">Text Transformer</div><div class="tc-cat">Text</div></div>
+        <div class="tc-badge badge-util">Free</div>
+      </div>
+      <div class="tc-body text-tool">
+        <textarea class="tt-ta" id="ttText" placeholder="Type or paste text here..." oninput="ttUpdate()"></textarea>
+        <div class="tt-btns">
+          <button class="tt-btn" onclick="ttDo('upper')">UPPER</button>
+          <button class="tt-btn" onclick="ttDo('lower')">lower</button>
+          <button class="tt-btn" onclick="ttDo('title')">Title</button>
+          <button class="tt-btn" onclick="ttDo('reverse')">esreveR</button>
+          <button class="tt-btn" onclick="ttDo('trim')">Trim</button>
+          <button class="tt-btn" onclick="ttDo('copy')">Copy</button>
+        </div>
+        <div class="tt-stats">
+          <div>Words: <span id="ttW">0</span></div>
+          <div>Chars: <span id="ttC">0</span></div>
+          <div>Lines: <span id="ttL">0</span></div>
+          <div>Sentences: <span id="ttS">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. PASSWORD GENERATOR -->
+    <div class="tc" data-cat="security" data-name="password generator strong secure random">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(255,45,120,.15),rgba(180,79,255,.1))">🔐</div>
+        <div class="tc-info"><div class="tc-name">Password Generator</div><div class="tc-cat">Security</div></div>
+        <div class="tc-badge badge-live">Secure</div>
+      </div>
+      <div class="tc-body">
+        <div class="pg-out" id="pgOut">Click Generate →</div>
+        <div class="pg-len">
+          <span style="font-family:var(--fm);font-size:.6rem;color:var(--muted)">Length:</span>
+          <input type="range" class="pg-slider" id="pgLen" min="8" max="64" value="16" oninput="document.getElementById('pgLenV').textContent=this.value">
+          <span class="pg-len-val" id="pgLenV">16</span>
+        </div>
+        <div class="pg-opts">
+          <label class="pg-opt"><input type="checkbox" id="pgUp" checked> A–Z</label>
+          <label class="pg-opt"><input type="checkbox" id="pgLo" checked> a–z</label>
+          <label class="pg-opt"><input type="checkbox" id="pgNm" checked> 0–9</label>
+          <label class="pg-opt"><input type="checkbox" id="pgSp"> !@#$</label>
+        </div>
+        <div class="pg-row">
+          <button class="pg-btn" onclick="genPass()">⚡ Generate</button>
+          <button class="pg-copy" id="pgCopyBtn" onclick="copyPass()">📋 Copy</button>
+        </div>
+        <div class="pg-str" id="pgStr"></div>
+      </div>
+    </div>
+
+    <!-- 5. HASH GENERATOR -->
+    <div class="tc" data-cat="security" data-name="hash md5 sha256 sha512 encode">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(0,200,255,.12),rgba(180,79,255,.08))">🔒</div>
+        <div class="tc-info"><div class="tc-name">Hash Generator</div><div class="tc-cat">Security</div></div>
+        <div class="tc-badge badge-live">Client-side</div>
+      </div>
+      <div class="tc-body">
+        <input class="ht-inp" id="htInp" placeholder="Enter text to hash..." oninput="autoHash()">
+        <div class="ht-row">
+          <select class="ht-sel" id="htAlg" onchange="autoHash()">
+            <option value="sha256">SHA-256</option>
+            <option value="sha512">SHA-512</option>
+            <option value="sha1">SHA-1</option>
+          </select>
+          <button class="ht-btn" onclick="copyHash()">📋 Copy</button>
+        </div>
+        <div class="ht-res" id="htRes">Enter text above to generate hash...</div>
+      </div>
+    </div>
+
+    <!-- 6. BASE64 ENCODE/DECODE -->
+    <div class="tc" data-cat="convert" data-name="base64 encode decode convert">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(0,255,180,.12),rgba(255,230,0,.08))">📦</div>
+        <div class="tc-info"><div class="tc-name">Base64 Tool</div><div class="tc-cat">Converter</div></div>
+        <div class="tc-badge badge-util">Free</div>
+      </div>
+      <div class="tc-body">
+        <textarea class="b64-ta" id="b64In" placeholder="Input text or base64..."></textarea>
+        <div class="b64-row">
+          <button class="b64-btn b64-enc" onclick="b64Enc()">Encode →</button>
+          <button class="b64-btn b64-dec" onclick="b64Dec()">← Decode</button>
+        </div>
+        <textarea class="b64-ta" id="b64Out" placeholder="Result..." readonly></textarea>
+        <button class="ct-copy" onclick="navigator.clipboard.writeText(document.getElementById('b64Out').value);this.textContent='✓ Copied!'">📋 Copy Result</button>
+      </div>
+    </div>
+
+    <!-- 7. JSON FORMATTER -->
+    <div class="tc" data-cat="convert" data-name="json format prettify minify validate">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(255,230,0,.12),rgba(0,255,180,.08))">{}</div>
+        <div class="tc-info"><div class="tc-name">JSON Formatter</div><div class="tc-cat">Converter</div></div>
+        <div class="tc-badge badge-util">Free</div>
+      </div>
+      <div class="tc-body">
+        <textarea class="jf-ta" id="jfIn" placeholder='{"key": "value", "num": 42}'></textarea>
+        <div class="jf-btns">
+          <button class="jf-btn" onclick="jfFormat()">✨ Prettify</button>
+          <button class="jf-btn" onclick="jfMinify()">⚡ Minify</button>
+          <button class="jf-btn" onclick="jfValidate()">✓ Validate</button>
+        </div>
+        <textarea class="jf-ta" id="jfOut" placeholder="Result..." readonly></textarea>
+        <button class="ct-copy" onclick="navigator.clipboard.writeText(document.getElementById('jfOut').value);this.textContent='✓ Copied!'">📋 Copy Result</button>
+      </div>
+    </div>
+
+    <!-- 8. QR CODE GENERATOR -->
+    <div class="tc" data-cat="utility" data-name="qr code generator link url">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(0,200,255,.12),rgba(0,255,180,.08))">▦</div>
+        <div class="tc-info"><div class="tc-name">QR Code Generator</div><div class="tc-cat">Utility</div></div>
+        <div class="tc-badge badge-util">Free</div>
+      </div>
+      <div class="tc-body">
+        <input class="qr-inp" id="qrInp" placeholder="Enter URL or text..." value="https://thenux.dev">
+        <div class="qr-preview" id="qrPreview">
+          <img id="qrImg" src="" alt="QR Code" style="width:150px;height:150px;display:none">
+          <span id="qrPlaceholder" style="font-family:var(--fm);font-size:.65rem;color:#999;text-align:center;padding:1rem">Click Generate</span>
+        </div>
+        <button class="qr-btn" onclick="genQR()">Generate QR Code</button>
+        <button class="qr-btn" id="qrDl" style="display:none;background:rgba(0,255,180,.15);color:var(--acc);background-image:none;box-shadow:none" onclick="dlQR()">⬇ Download PNG</button>
+        <p class="qr-note">Works with URLs, text, WhatsApp links, and more</p>
+      </div>
+    </div>
+
+    <!-- 9. UNIT CONVERTER -->
+    <div class="tc" data-cat="convert" data-name="unit converter length weight temperature">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(180,79,255,.12),rgba(0,200,255,.08))">⚖️</div>
+        <div class="tc-info"><div class="tc-name">Unit Converter</div><div class="tc-cat">Converter</div></div>
+        <div class="tc-badge badge-util">Free</div>
+      </div>
+      <div class="tc-body">
+        <div class="uc-cats">
+          <button class="uc-cat on" onclick="setUCat('length',this)">Length</button>
+          <button class="uc-cat" onclick="setUCat('weight',this)">Weight</button>
+          <button class="uc-cat" onclick="setUCat('temp',this)">Temp</button>
+          <button class="uc-cat" onclick="setUCat('data',this)">Data</button>
+        </div>
+        <div class="uc-row">
+          <input class="uc-inp" id="ucVal" placeholder="Value" type="number" value="1" oninput="doConvert()">
+          <select class="uc-sel" id="ucFrom" onchange="doConvert()"></select>
+        </div>
+        <div class="uc-eq">↕</div>
+        <div class="uc-row" style="margin-bottom:.5rem">
+          <select class="uc-sel" id="ucTo" onchange="doConvert()"></select>
+          <div class="uc-res" id="ucRes" style="flex:1">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. STOPWATCH / TIMER -->
+    <div class="tc" data-cat="utility" data-name="stopwatch timer countdown lap">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(255,230,0,.12),rgba(255,45,120,.08))">⏱</div>
+        <div class="tc-info"><div class="tc-name">Stopwatch</div><div class="tc-cat">Utility</div></div>
+        <div class="tc-badge badge-fun">Live</div>
+      </div>
+      <div class="tc-body">
+        <div class="tmr-disp" id="tmrDisp">00:00.000</div>
+        <div class="tmr-btns">
+          <button class="tmr-btn tmr-start" id="tmrStart" onclick="tmrToggle()">▶ Start</button>
+          <button class="tmr-btn" onclick="tmrLap()" style="background:rgba(0,255,180,.08);color:var(--acc);border:1px solid rgba(0,255,180,.2)">Lap</button>
+          <button class="tmr-btn tmr-reset" onclick="tmrReset()">⟳ Reset</button>
+        </div>
+        <div class="tmr-laps" id="tmrLaps"></div>
+      </div>
+    </div>
+
+    <!-- 11. IP INFO -->
+    <div class="tc" data-cat="utility" data-name="ip address info network lookup">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(0,255,180,.12),rgba(0,200,255,.08))">🌐</div>
+        <div class="tc-info"><div class="tc-name">IP Info</div><div class="tc-cat">Network</div></div>
+        <div class="tc-badge badge-live">Live</div>
+      </div>
+      <div class="tc-body">
+        <div class="ip-box" id="ipBox">
+          <div class="ip-row"><span class="ip-lbl">Your IP</span><span class="ip-val" id="ipVal">Detecting...</span><button class="ip-copy" onclick="navigator.clipboard.writeText(document.getElementById('ipVal').textContent)">Copy</button></div>
+          <div class="ip-row"><span class="ip-lbl">Type</span><span class="ip-val" id="ipType">—</span></div>
+          <div class="ip-row"><span class="ip-lbl">Browser</span><span id="ipBrow" style="color:var(--muted);font-size:.65rem">—</span></div>
+          <div class="ip-row"><span class="ip-lbl">Platform</span><span id="ipPlat" style="color:var(--muted);font-size:.65rem">—</span></div>
+          <div class="ip-row"><span class="ip-lbl">Screen</span><span id="ipScr" style="color:var(--muted);font-size:.65rem">—</span></div>
+          <div class="ip-row"><span class="ip-lbl">Time Zone</span><span id="ipTz" style="color:var(--muted);font-size:.65rem">—</span></div>
+        </div>
+        <button class="ip-refresh" onclick="loadIP()">↻ Refresh</button>
+      </div>
+    </div>
+
+    <!-- 12. LOREM IPSUM -->
+    <div class="tc" data-cat="text" data-name="lorem ipsum placeholder text generate">
+      <div class="tc-head">
+        <div class="tc-icon" style="background:linear-gradient(135deg,rgba(180,79,255,.12),rgba(255,45,120,.08))">📄</div>
+        <div class="tc-info"><div class="tc-name">Lorem Ipsum</div><div class="tc-cat">Text</div></div>
+        <div class="tc-badge badge-util">Free</div>
+      </div>
+      <div class="tc-body">
+        <div class="li-row">
+          <span class="li-label">Amount:</span>
+          <input class="li-num" id="liNum" type="number" value="3" min="1" max="20">
+          <select class="li-sel" id="liType">
+            <option value="paragraphs">Paragraphs</option>
+            <option value="sentences">Sentences</option>
+            <option value="words">Words</option>
+          </select>
+        </div>
+        <div class="li-out" id="liOut">Click Generate to produce placeholder text.</div>
+        <button class="li-btn" onclick="genLorem()">Generate Text</button>
+        <button class="ct-copy" style="margin-top:.4rem" onclick="navigator.clipboard.writeText(document.getElementById('liOut').textContent);this.textContent='✓ Copied!'">📋 Copy</button>
+      </div>
+    </div>
+
+  </div><!-- /tools-grid -->
+</div><!-- /wrap -->
+
+<footer>
+  <div class="fl">THENUX</div>
+  <div class="flinks">
+    <a href="home.html">Portfolio</a>
+    <a href="https://github.com/thenux-ai/" target="_blank">GitHub</a>
+    <a href="https://instagram.com/mr_darkwolf1" target="_blank">Instagram</a>
+    <a href="https://wa.me/94771479121" target="_blank">+94771479121</a>
+  </div>
+  <div class="fcopy">© 2025 THENUX Tools Suite</div>
+</footer>
+
+<script>
+'use strict';
+
+/* ── CURSOR ── */
+const cur=document.getElementById('cur'),curR=document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function ac(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;curR.style.left=rx+'px';curR.style.top=ry+'px';requestAnimationFrame(ac);})();
+document.addEventListener('mouseover',e=>{if(e.target.closest('a,button,input,select,textarea')){cur.style.transform='translate(-50%,-50%) scale(2.5)';curR.style.transform='translate(-50%,-50%) scale(1.5)';}});
+document.addEventListener('mouseout',e=>{if(e.target.closest('a,button,input,select,textarea')){cur.style.transform='translate(-50%,-50%) scale(1)';curR.style.transform='translate(-50%,-50%) scale(1)';}});
+
+/* ── THEME ── */
+function toggleTheme(){const d=document.documentElement;const l=d.getAttribute('data-theme')==='dark';d.setAttribute('data-theme',l?'light':'dark');document.getElementById('themeBtn').textContent=l?'☀️':'🌙';}
+
+/* ── FILTER ── */
+function filterTools(q){
+  const cards=document.querySelectorAll('.tc');
+  cards.forEach(c=>{
+    const n=c.dataset.name||'';
+    c.style.display=n.toLowerCase().includes(q.toLowerCase())||!q?'':'none';
+  });
+}
+function filterCat(cat,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.tc').forEach(c=>{
+    c.style.display=cat==='all'||c.dataset.cat===cat?'':'none';
+  });
+}
+
+/* ── AI CHAT ── */
+let aiModel='gpt4',aiWait=false;
+function setM(m,btn){
+  aiModel=m;
+  btn.closest('.ai-model-row').querySelectorAll('.am-btn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+}
+function addAiMsg(type,text,box){
+  const d=document.createElement('div');d.className=`am ${type==='bot'?'am-b':'am-u'}`;d.textContent=text;box.appendChild(d);box.scrollTop=box.scrollHeight;
+}
+function showTyping(box){const d=document.createElement('div');d.className='am-ty';d.id='ty_'+box.id;d.innerHTML='<span></span><span></span><span></span>';box.appendChild(d);box.scrollTop=box.scrollHeight;}
+function rmTyping(box){const t=document.getElementById('ty_'+box.id);if(t)t.remove();}
+
+async function sendMain(){
+  if(aiWait)return;
+  const inp=document.getElementById('aiInpMain'),btn=document.getElementById('aiSendMain'),msgs=document.getElementById('aiMsgsMain');
+  const q=inp.value.trim();if(!q)return;
+  inp.value='';addAiMsg('user',q,msgs);aiWait=true;btn.disabled=true;showTyping(msgs);
+  try{
+    const r=await fetch(`https://thenuxai-gpt.vercel.app/api/gpt?q=${encodeURIComponent(q)}&model=${aiModel}`);
+    const d=await r.json();rmTyping(msgs);addAiMsg('bot',d.response||'No response.',msgs);
+  }catch{rmTyping(msgs);addAiMsg('bot','⚠ Connection error. Please try again.',msgs);}
+  aiWait=false;btn.disabled=false;inp.focus();
+}
+document.getElementById('aiInpMain').addEventListener('keydown',e=>{if(e.key==='Enter')sendMain();});
+// Init greeting
+setTimeout(()=>addAiMsg('bot','👋 Hi! I\'m THENUX AI. Ask me anything!',document.getElementById('aiMsgsMain')),500);
+
+/* ── COLOR TOOL ── */
+const PALETTES=['#00ffb4','#00c8ff','#ff2d78','#ffe600','#b44fff','#ff9900','#4dffce','#ff6eb4','#ffffff','#7b61ff','#06d6a0','#ef476f'];
+(function initPals(){
+  const w=document.getElementById('ctPals');
+  PALETTES.forEach(c=>{
+    const b=document.createElement('div');b.className='ct-pal';b.style.background=c;
+    b.onclick=()=>updateColor(c);w.appendChild(b);
+  });
+})();
+function hexToRgb(h){const r=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);return r?{r:parseInt(r[1],16),g:parseInt(r[2],16),b:parseInt(r[3],16)}:null;}
+function rgbToHsl(r,g,b){r/=255;g/=255;b/=255;const max=Math.max(r,g,b),min=Math.min(r,g,b);let h,s,l=(max+min)/2;if(max===min){h=s=0;}else{const d=max-min;s=l>.5?d/(2-max-min):d/(max+min);switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6;}return{h:Math.round(h*360),s:Math.round(s*100),l:Math.round(l*100)};}
+function updateColor(h){
+  if(!/^#[0-9a-f]{6}$/i.test(h))return;
+  document.getElementById('ctColor').value=h;
+  document.getElementById('ctHex').value=h.toUpperCase();
+  const rgb=hexToRgb(h);
+  if(!rgb)return;
+  document.getElementById('ctRgb').value=`${rgb.r}, ${rgb.g}, ${rgb.b}`;
+  const hsl=rgbToHsl(rgb.r,rgb.g,rgb.b);
+  document.getElementById('ctHsl').value=`${hsl.h}°, ${hsl.s}%, ${hsl.l}%`;
+  const lum=(0.299*rgb.r+0.587*rgb.g+0.114*rgb.b)/255;
+  const prev=document.getElementById('ctPrev');prev.style.background=h;prev.style.color=lum>.5?'#000':'#fff';prev.textContent=h.toUpperCase();
+}
+function updateColorFromHex(v){if(/^#[0-9a-f]{6}$/i.test(v))updateColor(v);}
+function copyColor(){navigator.clipboard.writeText(document.getElementById('ctHex').value);const b=document.querySelector('.ct-copy');b.textContent='✓ Copied!';setTimeout(()=>b.textContent='📋 Copy HEX',1500);}
+updateColor('#00ffb4');
+
+/* ── TEXT TOOL ── */
+function ttUpdate(){
+  const t=document.getElementById('ttText').value;
+  document.getElementById('ttW').textContent=t.trim()?t.trim().split(/\s+/).length:0;
+  document.getElementById('ttC').textContent=t.length;
+  document.getElementById('ttL').textContent=t?t.split('\n').length:0;
+  document.getElementById('ttS').textContent=t.trim()?t.split(/[.!?]+/).filter(s=>s.trim()).length:0;
+}
+function ttDo(op){
+  const ta=document.getElementById('ttText');let t=ta.value;
+  if(op==='upper')ta.value=t.toUpperCase();
+  else if(op==='lower')ta.value=t.toLowerCase();
+  else if(op==='title')ta.value=t.replace(/\w\S*/g,w=>w.charAt(0).toUpperCase()+w.substr(1).toLowerCase());
+  else if(op==='reverse')ta.value=t.split('').reverse().join('');
+  else if(op==='trim')ta.value=t.split('\n').map(l=>l.trim()).join('\n').trim();
+  else if(op==='copy'){navigator.clipboard.writeText(t);}
+  ttUpdate();
+}
+
+/* ── PASSWORD GEN ── */
+let lastPass='';
+function genPass(){
+  const len=+document.getElementById('pgLen').value;
+  let chars='';
+  if(document.getElementById('pgUp').checked)chars+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if(document.getElementById('pgLo').checked)chars+='abcdefghijklmnopqrstuvwxyz';
+  if(document.getElementById('pgNm').checked)chars+='0123456789';
+  if(document.getElementById('pgSp').checked)chars+='!@#$%^&*()_+-=[]{}';
+  if(!chars)chars='abcdefghijklmnopqrstuvwxyz0123456789';
+  let pass='';const arr=new Uint32Array(len);crypto.getRandomValues(arr);
+  arr.forEach(v=>pass+=chars[v%chars.length]);
+  lastPass=pass;document.getElementById('pgOut').textContent=pass;
+  // Strength bar
+  const str=document.getElementById('pgStr');str.innerHTML='';
+  const score=Math.min(5,Math.floor(len/8)+([document.getElementById('pgUp'),document.getElementById('pgLo'),document.getElementById('pgNm'),document.getElementById('pgSp')].filter(c=>c.checked).length));
+  const cols=['#ff2d78','#ff9900','#ffe600','#4dffce','#00ffb4'];
+  for(let i=0;i<5;i++){const s=document.createElement('div');s.className='pg-s';if(i<score)s.style.background=cols[Math.min(score-1,4)];str.appendChild(s);}
+}
+function copyPass(){if(!lastPass)return;navigator.clipboard.writeText(lastPass);const b=document.getElementById('pgCopyBtn');b.textContent='✓ Copied!';setTimeout(()=>b.textContent='📋 Copy',1500);}
+genPass();
+
+/* ── HASH TOOL ── */
+async function autoHash(){
+  const inp=document.getElementById('htInp').value;const alg=document.getElementById('htAlg').value;
+  if(!inp){document.getElementById('htRes').textContent='Enter text above to generate hash...';return;}
+  const algMap={'sha256':'SHA-256','sha512':'SHA-512','sha1':'SHA-1'};
+  try{
+    const enc=new TextEncoder();const data=enc.encode(inp);
+    const buf=await crypto.subtle.digest(algMap[alg],data);
+    const hex=Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    document.getElementById('htRes').textContent=hex;
+  }catch{document.getElementById('htRes').textContent='Error computing hash';}
+}
+function copyHash(){navigator.clipboard.writeText(document.getElementById('htRes').textContent);}
+
+/* ── BASE64 ── */
+function b64Enc(){try{document.getElementById('b64Out').value=btoa(unescape(encodeURIComponent(document.getElementById('b64In').value)));}catch{document.getElementById('b64Out').value='Error encoding';}}
+function b64Dec(){try{document.getElementById('b64Out').value=decodeURIComponent(escape(atob(document.getElementById('b64In').value)));}catch{document.getElementById('b64Out').value='Invalid Base64 input';}}
+
+/* ── JSON FORMATTER ── */
+function jfFormat(){try{document.getElementById('jfOut').value=JSON.stringify(JSON.parse(document.getElementById('jfIn').value),null,2);document.getElementById('jfOut').style.borderColor='rgba(0,255,180,.3)';}catch(e){document.getElementById('jfOut').value='❌ Invalid JSON: '+e.message;document.getElementById('jfOut').style.borderColor='rgba(255,45,120,.4)';}}
+function jfMinify(){try{document.getElementById('jfOut').value=JSON.stringify(JSON.parse(document.getElementById('jfIn').value));}catch(e){document.getElementById('jfOut').value='❌ Invalid JSON: '+e.message;}}
+function jfValidate(){try{JSON.parse(document.getElementById('jfIn').value);document.getElementById('jfOut').value='✅ Valid JSON!';document.getElementById('jfOut').style.borderColor='rgba(0,255,180,.3)';}catch(e){document.getElementById('jfOut').value='❌ Invalid: '+e.message;document.getElementById('jfOut').style.borderColor='rgba(255,45,120,.4)';}}
+
+/* ── QR CODE ── */
+function genQR(){
+  const v=document.getElementById('qrInp').value.trim();if(!v)return;
+  const url=`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(v)}&color=00ffb4&bgcolor=000408`;
+  const img=document.getElementById('qrImg');img.src=url;img.style.display='block';
+  document.getElementById('qrPlaceholder').style.display='none';
+  document.getElementById('qrDl').style.display='block';
+}
+function dlQR(){
+  const a=document.createElement('a');a.href=document.getElementById('qrImg').src;a.download='qr-thenux.png';a.click();
+}
+
+/* ── UNIT CONVERTER ── */
+const ucData={
+  length:{units:['m','km','cm','mm','mi','ft','in','yd'],base:{m:1,km:1000,cm:.01,mm:.001,mi:1609.344,ft:.3048,in:.0254,yd:.9144}},
+  weight:{units:['kg','g','mg','lb','oz','ton'],base:{kg:1,g:.001,mg:.000001,lb:.453592,oz:.0283495,ton:1000}},
+  temp:{units:['°C','°F','K'],base:null},
+  data:{units:['B','KB','MB','GB','TB'],base:{B:1,KB:1024,MB:1048576,GB:1073741824,TB:1099511627776}},
+};
+let ucCat='length';
+function setUCat(cat,btn){
+  ucCat=cat;document.querySelectorAll('.uc-cat').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  const d=ucData[cat];const from=document.getElementById('ucFrom'),to=document.getElementById('ucTo');
+  from.innerHTML=to.innerHTML='';
+  d.units.forEach(u=>{from.innerHTML+=`<option>${u}</option>`;to.innerHTML+=`<option>${u}</option>`;});
+  if(to.options.length>1)to.selectedIndex=1;doConvert();
+}
+function doConvert(){
+  const v=+document.getElementById('ucVal').value;
+  const f=document.getElementById('ucFrom').value,t=document.getElementById('ucTo').value;
+  if(isNaN(v)){document.getElementById('ucRes').textContent='—';return;}
+  let res;
+  if(ucCat==='temp'){
+    if(f===t){res=v;}
+    else if(f==='°C'&&t==='°F')res=v*9/5+32;
+    else if(f==='°F'&&t==='°C')res=(v-32)*5/9;
+    else if(f==='°C'&&t==='K')res=v+273.15;
+    else if(f==='K'&&t==='°C')res=v-273.15;
+    else if(f==='°F'&&t==='K')res=(v-32)*5/9+273.15;
+    else if(f==='K'&&t==='°F')res=(v-273.15)*9/5+32;
+  }else{
+    const d=ucData[ucCat].base;res=v*d[f]/d[t];
+  }
+  document.getElementById('ucRes').textContent=+res.toFixed(8)+' '+t;
+}
+setUCat('length',document.querySelector('.uc-cat.on'));
+
+/* ── STOPWATCH ── */
+let tmrStart2=null,tmrEl=0,tmrRun=false,tmrRAF=null,lapN=0;
+function tmrToggle(){
+  if(!tmrRun){tmrRun=true;tmrStart2=performance.now()-tmrEl;document.getElementById('tmrStart').textContent='⏸ Pause';tmrTick();}
+  else{tmrRun=false;tmrEl=performance.now()-tmrStart2;cancelAnimationFrame(tmrRAF);document.getElementById('tmrStart').textContent='▶ Resume';}
+}
+function tmrTick(){if(!tmrRun)return;tmrEl=performance.now()-tmrStart2;document.getElementById('tmrDisp').textContent=fmtTime(tmrEl);tmrRAF=requestAnimationFrame(tmrTick);}
+function tmrReset(){tmrRun=false;cancelAnimationFrame(tmrRAF);tmrEl=0;lapN=0;document.getElementById('tmrDisp').textContent='00:00.000';document.getElementById('tmrStart').textContent='▶ Start';document.getElementById('tmrLaps').innerHTML='';}
+function tmrLap(){if(!tmrRun&&tmrEl===0)return;lapN++;const d=document.createElement('div');d.className='tmr-lap';d.innerHTML=`Lap ${lapN} <span>${fmtTime(tmrEl)}</span>`;document.getElementById('tmrLaps').prepend(d);}
+function fmtTime(ms){const m=Math.floor(ms/60000),s=Math.floor((ms%60000)/1000),ml=Math.floor(ms%1000);return`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ml).padStart(3,'0')}`;}
+
+/* ── IP INFO ── */
+async function loadIP(){
+  document.getElementById('ipVal').textContent='Detecting...';
+  try{const r=await fetch('https://api.ipify.org?format=json');const d=await r.json();document.getElementById('ipVal').textContent=d.ip||'Unknown';}
+  catch{document.getElementById('ipVal').textContent='Unavailable';}
+  document.getElementById('ipType').textContent=location.protocol==='https:'?'Secure (HTTPS)':'HTTP';
+  document.getElementById('ipBrow').textContent=navigator.userAgent.includes('Chrome')?'Chrome':navigator.userAgent.includes('Firefox')?'Firefox':navigator.userAgent.includes('Safari')?'Safari':'Other';
+  document.getElementById('ipPlat').textContent=navigator.platform||'Unknown';
+  document.getElementById('ipScr').textContent=`${screen.width}×${screen.height} @${devicePixelRatio}x`;
+  document.getElementById('ipTz').textContent=Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+loadIP();
+
+/* ── LOREM IPSUM ── */
+const LOREM=['Lorem ipsum dolor sit amet, consectetur adipiscing elit.','Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.','Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.','Duis aute irure dolor in reprehenderit in voluptate velit esse cillum.','Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia.','Praesent commodo cursus magna, vel scelerisque nisl consectetur.','Vivamus magna. Cras in mi at felis aliquet congue. Ut a est eget ligula.','Nulla facilisi. Aenean nec eros. Vestibulum ante ipsum primis.'];
+const WORDS=['lorem','ipsum','dolor','sit','amet','consectetur','adipiscing','elit','sed','eiusmod','tempor','incididunt','labore','dolore','magna','aliqua','enim','minim','veniam','quis','nostrud','exercitation','ullamco','laboris','nisi'];
+function genLorem(){
+  const n=Math.min(20,Math.max(1,+document.getElementById('liNum').value));
+  const type=document.getElementById('liType').value;
+  let out='';
+  if(type==='paragraphs'){for(let i=0;i<n;i++){const sentences=[];for(let j=0;j<5+Math.floor(Math.random()*4);j++)sentences.push(LOREM[Math.floor(Math.random()*LOREM.length)]);out+=sentences.join(' ')+(i<n-1?'\n\n':'');}}
+  else if(type==='sentences'){const s=[];for(let i=0;i<n;i++)s.push(LOREM[Math.floor(Math.random()*LOREM.length)]);out=s.join(' ');}
+  else{const w=[];for(let i=0;i<n;i++)w.push(WORDS[Math.floor(Math.random()*WORDS.length)]);out=w.join(' ')+'.';}
+  document.getElementById('liOut').textContent=out;
+}
+</script>
+</body>
+</html>
