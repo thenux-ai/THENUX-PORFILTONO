@@ -473,7 +473,7 @@ nav{
    ABOUT
 ══════════════════════════════════════════════════ */
 #about{padding:9rem 0}
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:7rem;align-items:center}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
 .about-text p{font-size:1.05rem;color:var(--muted);line-height:1.9;margin-bottom:1.2rem;font-weight:300}
 .about-text p strong{color:var(--text);font-weight:600}
 .badges-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem}
@@ -622,7 +622,7 @@ nav{
    CONTACT
 ══════════════════════════════════════════════════ */
 #contact{padding:9rem 0}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:7rem;align-items:start}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
 .contact-info h2{font-family:var(--fhead);font-weight:900;font-size:clamp(1.9rem,3.5vw,3rem);letter-spacing:-.02em;line-height:1.1;margin-bottom:1.3rem}
 .contact-info h2 span{color:var(--acc)}
 .contact-info p{font-size:1rem;color:var(--muted);line-height:1.8;margin-bottom:1.8rem}
@@ -685,6 +685,58 @@ footer{
    MISC
 ══════════════════════════════════════════════════ */
 @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LARGE SCREEN (≥1400px) ── */
+@media(min-width:1400px){
+  .sec-wrap{padding:0 4rem}
+  .hero-title{font-size:10rem}
+  .about-grid{gap:6rem}
+  .contact-grid{gap:6rem}
+  .skills-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ── AI ASSISTANT BUTTON ── */
+#aiBtn{position:fixed;bottom:2rem;right:2rem;z-index:850;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.4rem;box-shadow:0 0 30px var(--glow),0 8px 24px rgba(0,0,0,.4);transition:transform .25s,box-shadow .25s;animation:aiBtnPop .6s 2s cubic-bezier(.23,1,.32,1) both}
+@keyframes aiBtnPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+#aiBtn:hover{transform:scale(1.12) translateY(-3px);box-shadow:0 0 50px var(--glow),0 12px 35px rgba(0,0,0,.4)}
+#aiBtn::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:1.5px solid rgba(0,255,180,.4);animation:aiBtnRing 2s ease-out infinite}
+@keyframes aiBtnRing{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.4);opacity:0}}
+.ai-tooltip{position:absolute;bottom:calc(100%+10px);right:0;background:rgba(0,0,0,.9);border:1px solid var(--border);border-radius:8px;padding:.4rem .8rem;font-family:var(--fmono);font-size:.62rem;letter-spacing:.1em;color:var(--acc);white-space:nowrap;opacity:0;transform:translateY(6px);transition:all .25s;pointer-events:none}
+#aiBtn:hover .ai-tooltip{opacity:1;transform:translateY(0)}
+
+/* ── AI CHAT PANEL ── */
+#aiPanel{position:fixed;bottom:6rem;right:2rem;z-index:849;width:min(400px,calc(100vw - 2rem));background:rgba(2,6,4,.97);border:1px solid var(--border);border-radius:16px;overflow:hidden;display:none;flex-direction:column;box-shadow:0 0 60px rgba(0,255,180,.12),0 30px 80px rgba(0,0,0,.6);backdrop-filter:blur(20px)}
+#aiPanel.open{display:flex;animation:aiIn .35s cubic-bezier(.23,1,.32,1)}
+@keyframes aiIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:none}}
+.aip-head{background:rgba(0,255,180,.07);padding:.7rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.aip-hl{display:flex;align-items:center;gap:.6rem}
+.aip-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--acc),var(--acc2));display:flex;align-items:center;justify-content:center;font-size:.8rem}
+.aip-nm{font-family:var(--fhead);font-size:.72rem;letter-spacing:.1em;color:var(--acc)}
+.aip-st{font-family:var(--fmono);font-size:.55rem;color:rgba(0,255,180,.45);display:flex;align-items:center;gap:.3rem}
+.aip-sd{width:5px;height:5px;border-radius:50%;background:#00ff99;animation:sdB 1.5s ease-in-out infinite}
+@keyframes sdB{0%,100%{opacity:1}50%{opacity:.2}}
+.aip-x{font-size:1.1rem;color:var(--muted);cursor:pointer;transition:color .2s;background:transparent;border:none;line-height:1}
+.aip-x:hover{color:var(--acc3)}
+.aip-mdl{display:flex;gap:.4rem;padding:.5rem .8rem;border-bottom:1px solid var(--border);background:rgba(0,255,180,.02)}
+.mbtn{flex:1;background:transparent;border:1px solid var(--border);border-radius:6px;padding:.3rem;font-family:var(--fmono);font-size:.6rem;letter-spacing:.08em;color:var(--muted);cursor:pointer;transition:all .2s;text-transform:uppercase}
+.mbtn.on{background:rgba(0,255,180,.1);border-color:var(--acc);color:var(--acc)}
+.mbtn:hover{border-color:var(--acc);color:var(--acc)}
+.aip-msgs{flex:1;height:280px;overflow-y:auto;padding:.8rem;display:flex;flex-direction:column;gap:.6rem;scrollbar-width:thin;scrollbar-color:var(--acc) transparent}
+.aip-msgs::-webkit-scrollbar{width:2px}.aip-msgs::-webkit-scrollbar-thumb{background:var(--acc)}
+.msg{max-width:86%;border-radius:10px;padding:.6rem .85rem;font-family:var(--fmono);font-size:.68rem;line-height:1.65;word-break:break-word}
+.mb{background:rgba(0,255,180,.06);border:1px solid rgba(0,255,180,.12);color:var(--text);align-self:flex-start;border-bottom-left-radius:2px}
+.mu{background:linear-gradient(135deg,rgba(0,255,180,.15),rgba(0,200,255,.1));border:1px solid rgba(0,200,255,.2);color:#fff;align-self:flex-end;text-align:right;border-bottom-right-radius:2px}
+.mty{display:flex;gap:4px;align-items:center;padding:.6rem .85rem;background:rgba(0,255,180,.04);border:1px solid rgba(0,255,180,.1);border-radius:10px;border-bottom-left-radius:2px;align-self:flex-start}
+.mty span{width:6px;height:6px;background:var(--acc);border-radius:50%;animation:tyd .8s ease-in-out infinite}
+.mty span:nth-child(2){animation-delay:.15s}.mty span:nth-child(3){animation-delay:.3s}
+@keyframes tyd{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+.aip-in{padding:.6rem .8rem;border-top:1px solid var(--border);display:flex;gap:.5rem;align-items:center;background:rgba(0,255,180,.02)}
+.aip-f{flex:1;background:transparent;border:none;outline:none;font-family:var(--fmono);font-size:.68rem;color:var(--text);caret-color:var(--acc)}
+.aip-f::placeholder{color:rgba(255,255,255,.2)}
+.aip-snd{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--acc),var(--acc2));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;color:#000;transition:transform .2s,box-shadow .2s;flex-shrink:0}
+.aip-snd:hover{transform:scale(1.1);box-shadow:0 4px 16px var(--glow)}
+.aip-snd:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.aip-ft{padding:.35rem .8rem;border-top:1px solid var(--border);font-family:var(--fmono);font-size:.52rem;letter-spacing:.08em;color:rgba(0,255,180,.22);display:flex;justify-content:space-between}
 
 /* MOBILE */
 /* ── TABLET (≤1024px) ── */
@@ -782,6 +834,7 @@ footer{
     <a href="#projects">Projects</a>
     <a href="#hire">Hire Me</a>
     <a href="#contact">Contact</a>
+    <a href="tools.html" style="color:var(--acc)">🛠 Tools</a>
   </div>
   <div class="nav-right">
     <button class="nav-btn ripple-btn" id="consoleBtnNav" title="Console">⌨</button>
@@ -797,6 +850,7 @@ footer{
   <a href="#projects" onclick="closeMenu()">Projects</a>
   <a href="#hire" onclick="closeMenu()">Hire Me</a>
   <a href="#contact" onclick="closeMenu()">Contact</a>
+  <a href="tools.html" style="color:var(--acc)">🛠 Tools</a>
   <a href="https://wa.me/94771479121" target="_blank" style="color:var(--acc)">💬 WhatsApp: +94771479121</a>
 </div>
 
@@ -1764,6 +1818,106 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth',block:'start'}); }
   });
 });
+
+/* ─────────── AI ASSISTANT ─────────── */
+let aiModel = 'gpt4';
+let aiWaiting = false;
+
+function toggleAI() {
+  const p = document.getElementById('aiPanel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) document.getElementById('aiField').focus();
+}
+
+function setModel(m) {
+  aiModel = m;
+  document.querySelectorAll('.mbtn').forEach(b => b.classList.toggle('on', b.dataset.m === m));
+  addMsg('bot', `Switched to ${m.toUpperCase()} model ✓`);
+}
+
+function addMsg(type, text) {
+  const box = document.getElementById('aiMsgs');
+  const d = document.createElement('div');
+  d.className = `msg ${type === 'bot' ? 'mb' : 'mu'}`;
+  d.textContent = text;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = document.getElementById('aiMsgs');
+  const d = document.createElement('div');
+  d.className = 'mty'; d.id = 'aiTyping';
+  d.innerHTML = '<span></span><span></span><span></span>';
+  box.appendChild(d); box.scrollTop = box.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('aiTyping');
+  if (t) t.remove();
+}
+
+async function sendAI() {
+  if (aiWaiting) return;
+  const f = document.getElementById('aiField');
+  const q = f.value.trim();
+  if (!q) return;
+  f.value = '';
+  addMsg('user', q);
+  aiWaiting = true;
+  document.getElementById('aiSend').disabled = true;
+  showTyping();
+  try {
+    const url = `https://thenuxai-gpt.vercel.app/api/gpt?q=${encodeURIComponent(q)}&model=${aiModel}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    removeTyping();
+    addMsg('bot', data.response || 'No response received.');
+  } catch (err) {
+    removeTyping();
+    addMsg('bot', '⚠ Connection error. Please try again.');
+    cLog('cl-red', `AI API error: ${err.message}`);
+  }
+  aiWaiting = false;
+  document.getElementById('aiSend').disabled = false;
+  document.getElementById('aiField').focus();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => addMsg('bot', '👋 Hi! I\'m THENUX AI. Ask me anything about this portfolio, projects, or hire options!'), 2500);
+});
+
 </script>
+<!-- ══ AI ASSISTANT ══ -->
+<button id="aiBtn" onclick="toggleAI()" title="THENUX AI">
+  🤖
+  <div class="ai-tooltip">Ask THENUX AI</div>
+</button>
+<div id="aiPanel">
+  <div class="aip-head">
+    <div class="aip-hl">
+      <div class="aip-av">🤖</div>
+      <div>
+        <div class="aip-nm">THENUX AI</div>
+        <div class="aip-st"><div class="aip-sd"></div>Online</div>
+      </div>
+    </div>
+    <button class="aip-x" onclick="toggleAI()">✕</button>
+  </div>
+  <div class="aip-mdl">
+    <button class="mbtn on" data-m="gpt4" onclick="setModel('gpt4')">GPT-4</button>
+    <button class="mbtn" data-m="gpt3" onclick="setModel('gpt3')">GPT-3</button>
+  </div>
+  <div class="aip-msgs" id="aiMsgs"></div>
+  <div class="aip-in">
+    <input class="aip-f" id="aiField" placeholder="Ask me anything..." autocomplete="off" onkeydown="if(event.key==='Enter')sendAI()">
+    <button class="aip-snd" id="aiSend" onclick="sendAI()">↑</button>
+  </div>
+  <div class="aip-ft">
+    <span>Powered by THENUX-AI GPT</span>
+    <span id="aiModel">Model: GPT-4</span>
+  </div>
+</div>
+
 </body>
 </html>
